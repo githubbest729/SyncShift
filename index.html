@@ -9,7 +9,6 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
   <link rel="apple-touch-icon" href="icons/icon-180x180.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -29,10 +28,8 @@
       <div class="ov"><div class="trk"><i id="ovb"></i><u id="now"></u></div><small id="ovt"></small></div>
     </section>
 
-    <!-- PROACTIVE OVERLAP BANNER -->
-    <div id="overlap-banner" style="padding:10px; border-radius:8px; font-weight:bold; font-size:13px; text-align:center;"></div>
+    <div id="overlap-banner" class="banner"></div>
 
-    <!-- WEEKLY ANALYTICS -->
     <section id="analytics">
       <h2>Weekly Performance</h2>
       <div id="analytics-content"></div>
@@ -40,13 +37,13 @@
     
     <section>
       <h2>Brain Dump</h2>
-      <div class="row" style="margin-top: 0; margin-bottom: 10px; gap: 6px;">
-        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='Prepare candidate brief for: '">📄 Candidate Brief</button>
-        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='Research company / prospect: '">🔍 Research</button>
-        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='Book meeting / restaurant: '">📅 Book Meeting</button>
-        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='LinkedIn engagement batch: '">💬 LinkedIn Batch</button>
+      <div class="row qa-row">
+        <button class="g qa-btn" id="qa1">📄 Candidate Brief</button>
+        <button class="g qa-btn" id="qa2">🔍 Research</button>
+        <button class="g qa-btn" id="qa3">📅 Book Meeting</button>
+        <button class="g qa-btn" id="qa4">💬 LinkedIn Batch</button>
       </div>
-      <textarea id="bd" rows="3" placeholder="Speak or type: Book a table for two at Dishoom London on Tuesday 7 PM, and remind me to review Sarah's COO brief"></textarea>
+      <textarea id="bd" rows="3" placeholder="Speak or type: Book a table for two at Dishoom London on Tuesday 7 PM..."></textarea>
       <div class="row"><button id="mic">🎙 Record</button><button id="disp" class="pri">Dispatch</button><small id="mn"></small></div>
     </section>
     
@@ -85,7 +82,7 @@
       </div>
       <textarea id="cb" rows="3" placeholder="Draft content" style="margin-top:8px"></textarea>
       <div class="row" style="justify-content: space-between;">
-        <label style="font-size: 13px;"><input type="checkbox" id="cvc"> Founder voice checked</label>
+        <label><input type="checkbox" id="cvc"> Voice checked</label>
         <button id="ca" class="pri">Add post</button>
       </div>
     </section>

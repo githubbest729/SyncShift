@@ -1,4 +1,4 @@
-```markdown
+
 <p align="center">
   <img src="icons/icon-192x192.png" alt="SyncShift Logo" width="150" height="150">
 </p>
@@ -122,4 +122,3 @@ Extract the repository files into your local environment or GitHub Codespaces.
 
 ```
 
-```

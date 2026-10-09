@@ -424,7 +424,7 @@
 })();
  (function() {
   var CFG = {
-    url: 'https://script.google.com/macros/s/AKfycbz-hmeCMH4jTlON6tw-6_T2MuVKQoC_IIJmJ-xZbKHoXha0TyQEd1MN2n5D1znei7YR/exec',
+    url: 'https://script.google.com/macros/s/AKfycby728XzmUfVQuspxvmtyGXcOztGiJZDBdYi-RaE94UxLaDdqKcybK4GfiR1GJ1IEVuJ/exec',
     token: 'blue-falcon-manila-7342-orbit'
   }; 
   

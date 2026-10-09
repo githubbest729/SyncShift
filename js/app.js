@@ -666,6 +666,13 @@
     };
   }
 
+   /* ---------- Quick Actions (CSP Safe) ---------- */
+  var qa1 = $('#qa1'), qa2 = $('#qa2'), qa3 = $('#qa3'), qa4 = $('#qa4');
+  if(qa1) qa1.onclick = function() { $('#bd').value = 'Prepare candidate brief for: '; };
+  if(qa2) qa2.onclick = function() { $('#bd').value = 'Research company / prospect: '; };
+  if(qa3) qa3.onclick = function() { $('#bd').value = 'Book meeting / restaurant: '; };
+  if(qa4) qa4.onclick = function() { $('#bd').value = 'LinkedIn engagement batch: '; };
+   
   load(); $('#role').value = S.role; fills(); all(); tick(); setInterval(tick, 1000); setInterval(nr, 60000);
   if (live) { setSt('⟳ Connecting…'); sync(); setInterval(sync, 30000); addEventListener('online', sync); document.addEventListener('visibilitychange', function() { if (!document.hidden) sync() }); } else setSt('Local-only mode');
 })();

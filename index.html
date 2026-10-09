@@ -1,23 +1,128 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><title>SyncShift</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#121316"><meta name="description" content="Asynchronous EA Dispatch & Dual-Timezone Command Center">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
-<link rel="apple-touch-icon" href="icons/icon-180x180.png"><meta name="msapplication-config" content="browserconfig.xml">
-<link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/print.css" media="print"></head>
-<body><header><h1><b>Sync</b><span>Shift</span></h1><small>Asynchronous EA Dispatch & Dual-Timezone Command Center</small><select id="role" aria-label="I am"><option>EA</option><option>Founder</option></select><button id="sy" class="g"></button><button id="th" class="g" aria-label="Toggle theme">◐</button></header>
-<main>
-<section class="clocks"><div class="clk uk"><h3>London</h3><div class="t" id="tU"></div><div class="d" id="dU"></div><span class="pill" id="sU"></span></div>
-<div class="clk ph"><h3>Manila</h3><div class="t" id="tP"></div><div class="d" id="dP"></div><span class="pill" id="sP"></span></div>
-<div class="ov"><div class="trk"><i id="ovb"></i><u id="now"></u></div><small id="ovt"></small></div></section>
-<section><h2>Brain Dump</h2><textarea id="bd" rows="3" placeholder="Speak or type: Book a table for two at Dishoom London on Tuesday 7 PM, and remind me to review Sarah's COO brief"></textarea>
-<div class="row"><button id="mic">🎙 Record</button><button id="disp" class="pri">Dispatch</button><small id="mn"></small></div></section>
-<section><h2>EA Queue</h2><div id="q"></div><button id="ho" class="pri">Copy Daily Handover</button></section>
-<section><h2>48-Hour Nudge Tracker</h2><div id="ng"></div>
-<div class="row"><input id="nn" placeholder="Name"><input id="no" placeholder="Organization"><select id="nc"><option>Candidate</option><option>Investor</option><option>Client</option><option>Vendor</option></select><button id="na">Add</button></div></section>
-<section><h2>LinkedIn Content Calendar</h2><div id="cl"></div>
-<div class="row"><input id="ct" placeholder="Angle / topic"><input id="cd" type="date" aria-label="Publish date"><select id="cp"></select><select id="cs"></select></div>
-<textarea id="cb" rows="3" placeholder="Draft content" style="margin-top:8px"></textarea><div class="row"><button id="ca" class="pri">Add post</button></div></section>
-</main>
-<dialog id="m"><p id="mt"></p><div class="row"><button id="mc" class="pri">Copy</button><button id="mx">Close</button></div></dialog>
-<script src="js/app.js"></script><script src="js/sw-register.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SyncShift</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#121316">
+  <meta name="description" content="Asynchronous EA Dispatch & Dual-Timezone Command Center">
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+  <link rel="apple-touch-icon" href="icons/icon-180x180.png">
+  <meta name="msapplication-config" content="browserconfig.xml">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+</head>
+<body>
+  <header>
+    <h1><b>Sync</b><span>Shift</span></h1>
+    <small>Asynchronous EA Dispatch & Dual-Timezone Command Center</small>
+    <select id="role" aria-label="I am">
+      <option>EA</option>
+      <option>Founder</option>
+    </select>
+    <button id="sy" class="g"></button>
+    <button id="th" class="g" aria-label="Toggle theme">◐</button>
+  </header>
+  
+  <main>
+    <!-- TIMEZONE CLOCKS -->
+    <section class="clocks">
+      <div class="clk uk">
+        <h3>London</h3>
+        <div class="t" id="tU"></div>
+        <div class="d" id="dU"></div>
+        <span class="pill" id="sU"></span>
+      </div>
+      <div class="clk ph">
+        <h3>Manila</h3>
+        <div class="t" id="tP"></div>
+        <div class="d" id="dP"></div>
+        <span class="pill" id="sP"></span>
+      </div>
+      <div class="ov">
+        <div class="trk">
+          <i id="ovb"></i><u id="now"></u>
+        </div>
+        <small id="ovt"></small>
+      </div>
+    </section>
+    
+    <!-- BRAIN DUMP WITH NEW QUICK ACTIONS -->
+    <section>
+      <h2>Brain Dump</h2>
+      
+      <!-- QUICK ACTION TEMPLATE BUTTONS -->
+      <div class="row" style="margin-top: 0; margin-bottom: 10px; gap: 6px;">
+        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='Prepare candidate brief for: '">📄 Candidate Brief</button>
+        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='Research company / prospect: '">🔍 Research</button>
+        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='Book meeting / restaurant: '">📅 Book Meeting</button>
+        <button class="g" style="font-size: 12px; padding: 4px 8px;" onclick="document.getElementById('bd').value='LinkedIn engagement batch: '">💬 LinkedIn Batch</button>
+      </div>
+      
+      <textarea id="bd" rows="3" placeholder="Speak or type: Book a table for two at Dishoom London on Tuesday 7 PM, and remind me to review Sarah's COO brief"></textarea>
+      <div class="row">
+        <button id="mic">🎙 Record</button>
+        <button id="disp" class="pri">Dispatch</button>
+        <small id="mn"></small>
+      </div>
+    </section>
+    
+    <!-- EA QUEUE -->
+    <section>
+      <h2>EA Queue</h2>
+      <div id="q"></div>
+      <button id="ho" class="pri">Copy Daily Handover</button>
+    </section>
+    
+    <!-- CRM NUDGE TRACKER -->
+    <section>
+      <h2>48-Hour Nudge Tracker</h2>
+      <div id="ng"></div>
+      <div class="row">
+        <input id="nn" placeholder="Name">
+        <input id="no" placeholder="Organization">
+        <select id="nc">
+          <option>Candidate</option>
+          <option>Investor</option>
+          <option>Client</option>
+          <option>Vendor</option>
+        </select>
+        <button id="na">Add</button>
+      </div>
+    </section>
+    
+    <!-- CONTENT CALENDAR -->
+    <section>
+      <h2>LinkedIn Content Calendar</h2>
+      <div id="cl"></div>
+      <div class="row">
+        <input id="ct" placeholder="Angle / topic">
+        <input id="cd" type="date" aria-label="Publish date">
+        <select id="cp"></select>
+        <select id="cs"></select>
+      </div>
+      <textarea id="cb" rows="3" placeholder="Draft content" style="margin-top:8px"></textarea>
+      <div class="row">
+        <button id="ca" class="pri">Add post</button>
+      </div>
+    </section>
+  </main>
+  
+  <!-- POPUP DIALOG -->
+  <dialog id="m">
+    <p id="mt"></p>
+    <div class="row">
+      <button id="mc" class="pri">Copy</button>
+      <button id="mx">Close</button>
+    </div>
+  </dialog>
+  
+  <script src="js/app.js"></script>
+  <script src="js/sw-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "syncshift",
+  "version": "1.0.0",
+  "description": "Asynchronous EA Dispatch & Dual-Timezone Command Center",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

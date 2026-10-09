@@ -1,0 +1,4 @@
+/* TEAM */
+Built with: Vanilla HTML5, CSS3, ES6+
+Standards: PWA, Service Workers, Web Speech API, WCAG-minded
+Last update: 2026/10/09

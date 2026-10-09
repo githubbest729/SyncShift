@@ -94,7 +94,7 @@
     var d = new Date(), U = 'Europe/London', P = 'Asia/Manila', hu = hr(U, d), hp = hr(P, d), ov = hu >= 6 && hu < 11;
     function f(z, o) { return new Intl.DateTimeFormat('en-GB', Object.assign({ timeZone: z }, o)).format(d) }
     
-    if(!$('#tU')) return; // Safety check
+    if(!$('#tU')) return;
     
     $('#tU').textContent = f(U, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     $('#tP').textContent = f(P, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -126,14 +126,23 @@
   }
 
   function item(t, b) { return '<div class="it"><div>' + e(t.t) + '<small>' + e(t.c) + ' · ' + getPri(t.u) + ' · due ' + (t.due ? pht(t.due) : e(t.dtxt || 'not set')) + '</small></div><div>' + b + '</div></div>' }
-  function bt(a, i, l, s) { return '<button data-a="' + a + '" data-i="' + e(i) + '"' + (s ? ' data-s="' + s + '"' : '') + '>' + l + '</button>' }
+  function bt(a, i, l, s) { return '<button data-a="' + a + '" data-i="' + e(i) + '"' + (s ? ' data-s="' + s + '"' : '') + ' class="' + (a==='pub'?'pri':'') + '">' + l + '</button>' }
   
   function qr() {
     var g = { today: 'Today\'s Priorities', wait: 'Needs Founder Decision', done: 'Completed' }, h = '';
     Object.keys(g).forEach(function(k) {
       h += '<h4>' + g[k] + '</h4>';
       var l = S.tasks.filter(function(t) { return t.st == k });
-      if (!l.length) h += '<small>Nothing here</small>';
+      
+      // FEATURE: Empty-State Onboarding Polish
+      if (!l.length) {
+        if (k === 'today') {
+          h += '<div class="it" style="background:var(--bg); border: 1px dashed var(--b); border-radius: 8px; padding: 12px; text-align: center;"><small>💡 <b>Quick Tip:</b> Use the Brain Dump above to add your first task. Try typing: <i>"Book a flight to Manila for next Friday."</i></small></div>';
+        } else {
+          h += '<small>Nothing here</small>';
+        }
+      }
+      
       l.forEach(function(t) {
         var b = k == 'done' ? bt('mv', t.id, 'Reopen', 'today') : bt('mv', t.id, 'Done', 'done') + (k == 'today' ? bt('mv', t.id, 'Escalate to Founder', 'wait') : bt('mv', t.id, 'Back', 'today')) + bt('rm', t.id, '✕');
         h += item(t, b);
@@ -149,16 +158,28 @@
     S.nudges.sort(function(a, b) { return (a.sent || 9e15) - (b.sent || 9e15) });
     if($('#ng')) $('#ng').innerHTML = S.nudges.map(function(n) {
       var h = hrs(n), late = !closed(n) && n.sent && h > 48;
-      var bd = late ? '<span class="warn ' + (h > 72 ? 'late' : '') + '">Needs Nudge — ' + h + ' hrs</span>' : '<span class="pill">' + e(n.s) + (!closed(n) && n.sent ? ' · ' + h + ' hrs' : '') + '</span>';
-      return '<div class="it"><div>' + e(n.n) + ' <small>' + e(n.o) + ' · ' + e(n.cat) + ' · ' + (n.sent ? new Date(n.sent).toLocaleString('en-GB') : '—') + (n.step ? ' · Action: ' + e(n.step) : '') + (n.url ? ' · <a href="'+e(n.url)+'" target="_blank">LinkedIn</a>' : '') + '</small></div><div>' + bd + ' ' + bt('ng', n.id, 'Nudge') + bt('cl', n.id, 'Close') + '</div></div>';
-    }).join('') || '<small>No contacts</small>';
+      // FEATURE: Color escalation: amber at 48 h, red at 72 h
+      var bd = late ? '<span class="warn ' + (h > 72 ? 'late' : '') + '">' + (h > 72 ? '🔴 CRITICAL: ' : '🟠 Overdue: ') + h + ' hrs</span>' : '<span class="pill">' + e(n.s) + (!closed(n) && n.sent ? ' · ' + h + ' hrs' : '') + '</span>';
+      
+      // FEATURE: Nudge Tracker Quick Actions (Replied, Meeting Booked)
+      var acts = bt('ng', n.id, 'Copy Nudge msg') + (!closed(n) ? bt('nrep', n.id, 'Replied') + bt('nbk', n.id, 'Booked') : '') + bt('cl', n.id, 'Close');
+      
+      return '<div class="it"><div>' + e(n.n) + ' <small>' + e(n.o) + ' · ' + e(n.cat) + ' · ' + (n.sent ? new Date(n.sent).toLocaleString('en-GB') : '—') + (n.step ? ' · Action: ' + e(n.step) : '') + (n.url ? ' · <a href="'+e(n.url)+'" target="_blank">LinkedIn</a>' : '') + '</small></div><div>' + bd + ' ' + acts + '</div></div>';
+    }).join('') || '<div class="it" style="background:var(--bg); border: 1px dashed var(--b); border-radius: 8px; padding: 12px; text-align: center;"><small>💡 <b>No contacts tracked yet.</b> Add an Investor or Candidate below to start tracking follow-ups.</small></div>';
   }
 
   function cr() {
     S.content.sort(function(a, b) { return (a.date || 9e15) - (b.date || 9e15) });
     if($('#cl')) $('#cl').innerHTML = S.content.map(function(c) {
-      return '<div class="it"><div>' + e(c.topic) + '<small>' + e(c.type || 'Post') + ' · ' + e(c.status) + ' · ' + (c.date ? new Date(c.date).toLocaleDateString('en-GB') : e(c.dtxt || 'unscheduled')) + (c.voice === 'Yes' ? ' · ✅ Voice Checked' : '') + '</small><small>' + e((c.draft || '').slice(0, 120)) + '</small></div><div>' + bt('cc', c.id, 'Copy') + bt('cx', c.id, '✕') + '</div></div>';
-    }).join('') || '<small>No posts planned</small>';
+      var statusColor = c.status === 'Published' ? 'border-left: 4px solid #2ecc71;' : (c.status === 'Scheduled' ? 'border-left: 4px solid var(--ph);' : 'border-left: 4px solid var(--b);');
+      
+      // FEATURE: True pipeline states & One-click "Mark Published"
+      var actions = '';
+      if(c.status !== 'Published') actions += bt('pub', c.id, '🚀 Mark Published');
+      actions += bt('cc', c.id, 'Copy') + bt('cx', c.id, '✕');
+      
+      return '<div class="it" style="' + statusColor + ' padding-left: 10px;"><div>' + e(c.topic) + '<small><b>' + e(c.status) + '</b> · ' + e(c.type || 'Post') + ' · ' + (c.date ? new Date(c.date).toLocaleDateString('en-GB') : e(c.dtxt || 'unscheduled')) + (c.voice === 'Yes' ? ' · ✅ Voice Checked' : '') + '</small><small>' + e((c.draft || '').slice(0, 120)) + '</small></div><div>' + actions + '</div></div>';
+    }).join('') || '<div class="it" style="background:var(--bg); border: 1px dashed var(--b); border-radius: 8px; padding: 12px; text-align: center;"><small>💡 <b>Content Pipeline Empty.</b> Draft your first post below.</small></div>';
   }
 
   function renderAnalytics() {
@@ -170,20 +191,8 @@
     an.innerHTML = '<div class="row" style="gap:12px"><div class="clk ph"><h3>Tasks Done</h3><div class="t">' + dC + '</div></div><div class="clk uk"><h3>Posts Published</h3><div class="t">' + pC + '</div></div><div class="clk ph"><h3>Nudges Resolved</h3><div class="t">' + nC + '</div></div></div>';
   }
 
-  /* BUG FIX: Safely checks if the dropdown exists before updating it */
-  function fillSel(id, o, d) { 
-    var s = $(id);
-    if (!s) return; 
-    var v = s.value; 
-    o = o && o.length ? o : d; 
-    s.innerHTML = o.map(function(x) { return '<option>' + e(x) + '</option>' }).join(''); 
-    if (o.indexOf(v) > -1) s.value = v; 
-  }
-  
-  function fills() { 
-    fillSel('#nc', op('nudges', 'Category'), ['Candidate', 'Investor', 'Client', 'Vendor']); 
-  }
-  
+  function fillSel(id, o, d) { var s = $(id); if (!s) return; var v = s.value; o = o && o.length ? o : d; s.innerHTML = o.map(function(x) { return '<option>' + e(x) + '</option>' }).join(''); if (o.indexOf(v) > -1) s.value = v; }
+  function fills() { fillSel('#nc', op('nudges', 'Category'), ['Candidate', 'Investor', 'Client', 'Vendor']); }
   function all() { qr(); nr(); cr(); renderAnalytics(); }
 
   function nudgeMsg(n) { return 'Hi ' + String(n.n).split(' ')[0] + ', I hope you are well. I wanted to gently follow up on my note' + (n.sent ? ' of ' + new Date(n.sent).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : '') + ' regarding ' + n.o + '. Would you have a moment to share an update? Happy to work around your schedule. Many thanks.'; }
@@ -197,13 +206,17 @@
     if (a == 'mv') { t = by(S.tasks, i); t.st = b.dataset.s; q('tasks', 'update', i, { Status: sv('tasks', t.st) }); }
     if (a == 'rm') { S.tasks = S.tasks.filter(function(t) { return String(t.id) != i }); q('tasks', 'delete', i); }
     if (a == 'cl') { t = by(S.nudges, i); t.s = 'Closed'; q('nudges', 'update', i, { Status: pk('nudges', 'Status', 'Closed', /clos/i) }); }
+    if (a == 'nrep') { t = by(S.nudges, i); t.s = 'Replied'; q('nudges', 'update', i, { Status: 'Replied' }); }
+    if (a == 'nbk') { t = by(S.nudges, i); t.s = 'Meeting booked'; q('nudges', 'update', i, { Status: 'Meeting booked' }); }
     if (a == 'ng') { t = by(S.nudges, i); $('#mt').textContent = nudgeMsg(t); $('#mc').dataset.i = i; $('#m').showModal(); return; }
     if (a == 'cx') { S.content = S.content.filter(function(c) { return String(c.id) != i }); q('content', 'delete', i); }
     if (a == 'cc') { cp(by(S.content, i).draft || '', b); return; }
+    // FEATURE: One-click "Mark Published"
+    if (a == 'pub') { t = by(S.content, i); t.status = 'Published'; q('content', 'update', i, { Status: 'Published' }); }
     save(); all();
   });
 
-  if($('#mc')) $('#mc').onclick = function() { var i = $('#mc').dataset.i, n = by(S.nudges, i); cp($('#mt').textContent, $('#mc')); n.s = 'Nudge Sent'; n.sent = Date.now(); q('nudges', 'update', i, { Status: pk('nudges', 'Status', 'Nudge Sent', /nudge/i), 'Last Contact Date': iso(n.sent) }); save(); all(); };
+  if($('#mc')) $('#mc').onclick = function() { var i = $('#mc').dataset.i, n = by(S.nudges, i); cp($('#mt').textContent, $('#mc')); n.s = 'Contacted'; n.sent = Date.now(); q('nudges', 'update', i, { Status: 'Contacted', 'Last Contact Date': iso(n.sent) }); save(); all(); };
   if($('#mx')) $('#mx').onclick = function() { $('#m').close() };
 
   if($('#disp')) $('#disp').onclick = function() {
@@ -217,9 +230,9 @@
 
   if($('#na')) $('#na').onclick = function() {
     var n = $('#nn').value.trim(); if (!n) return;
-    var x = { id: 'tmp-' + Date.now(), n: n, o: $('#no').value.trim() || '—', cat: $('#nc').value, sent: Date.now(), s: 'Awaiting Reply', step: $('#nna').value.trim(), url: $('#nurl').value.trim() };
+    var x = { id: 'tmp-' + Date.now(), n: n, o: $('#no').value.trim() || '—', cat: $('#nc').value, sent: Date.now(), s: 'Contacted', step: $('#nna').value.trim(), url: $('#nurl').value.trim() };
     S.nudges.push(x);
-    q('nudges', 'add', x.id, { 'Contact Name': x.n, 'Organization': x.o, 'Category': pk('nudges', 'Category', x.cat), 'Last Contact Date': iso(x.sent), 'Status': pk('nudges', 'Status', 'Awaiting Reply', /await|pending|wait/i), 'Assigned To': pk('nudges', 'Assigned To', 'EA', /ea|assoc/i), 'Next Action': x.step, 'LinkedIn URL': x.url });
+    q('nudges', 'add', x.id, { 'Contact Name': x.n, 'Organization': x.o, 'Category': pk('nudges', 'Category', x.cat), 'Last Contact Date': iso(x.sent), 'Status': 'Contacted', 'Assigned To': pk('nudges', 'Assigned To', 'EA', /ea|assoc/i), 'Next Action': x.step, 'LinkedIn URL': x.url });
     $('#nn').value = $('#no').value = $('#nna').value = $('#nurl').value = ''; save(); all();
   };
 
@@ -231,15 +244,16 @@
     $('#ct').value = $('#cb').value = $('#cd').value = $('#cta').value = $('#ceg').value = ''; $('#cvc').checked = false; save(); all();
   };
 
+  // FEATURE: Enriched Daily Handover Output
   if($('#ho')) $('#ho').onclick = function() {
     var d = S.tasks.filter(function(t) { return t.st == 'done' }), w = S.tasks.filter(function(t) { return t.st == 'wait' }), p = S.tasks.filter(function(t) { return t.st == 'today' }), nd = S.nudges.filter(function(n) { return !closed(n) && hrs(n) > 48 }), pc = S.content.filter(function(c) { return c.status == 'Published' });
     function L(a, f) { return a.length ? a.map(f).join('\n') : '_None_' }
     var m = '*SyncShift Daily Handover — ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) + '*\n\n' +
-            '*✅ Completed (' + d.length + ')*\n' + L(d, function(t) { return '• ' + t.t }) + '\n\n' +
-            '*⏳ Needs Founder Decision (' + w.length + ')*\n' + L(w, function(t) { return '• ' + t.t }) + '\n\n' +
-            '*🎯 In Progress / Next Up (' + p.length + ')*\n' + L(p, function(t) { return '• ' + t.t + ' (' + t.u + ')' }) + '\n\n' +
-            '*📊 LinkedIn Summary*\n• ' + pc.length + ' posts published today.\n\n' +
-            '*🔔 Nudges Flagged (>48h)*\n' + L(nd, function(n) { return '• ' + n.n + ' (' + n.o + ') — ' + hrs(n) + ' hrs' });
+            '*✅ Completed Tasks*\n' + L(d, function(t) { return '• ' + t.t }) + '\n\n' +
+            '*📈 LinkedIn Activity*\n• ' + pc.length + ' posts successfully published today.\n\n' +
+            '*🚨 Escalated (Needs Founder Decision)*\n' + L(w, function(t) { return '• ' + t.t }) + '\n\n' +
+            '*🎯 Suggested Priorities for Tomorrow*\n' + L(p.slice(0, 3), function(t) { return '• ' + t.t + ' (' + t.u + ')' }) + '\n\n' +
+            '*🔔 Overdue CRM Nudges (>48h)*\n' + L(nd, function(n) { return '• ' + n.n + ' (' + n.o + ') — ' + hrs(n) + ' hrs' });
     cp(m, $('#ho'));
   };
 
@@ -259,7 +273,6 @@
     };
   }
 
-  /* ---------- Quick Actions (CSP Safe) ---------- */
   var qa1 = $('#qa1'), qa2 = $('#qa2'), qa3 = $('#qa3'), qa4 = $('#qa4');
   if(qa1) qa1.onclick = function() { $('#bd').value = 'Prepare candidate brief for: '; };
   if(qa2) qa2.onclick = function() { $('#bd').value = 'Research company / prospect: '; };

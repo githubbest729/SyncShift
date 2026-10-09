@@ -180,3 +180,9 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 @media (max-width: 560px) {
   .clocks { grid-template-columns: 1fr; }
 }
+
+
+/* V3 Additions */
+.banner { padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; text-align: center; margin-bottom: 16px; }
+.qa-row { margin-top: 0; margin-bottom: 10px; gap: 6px; }
+.qa-btn { font-size: 12px; padding: 4px 8px; }
